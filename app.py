@@ -14,7 +14,7 @@ def after_request(response):
   response.headers.add("Access-Control-Allow-Methods", "GET")
   return response
 
-api.add_resource(DelayClaimResource, "/claim/add")
+api.add_resource(DelayClaimResource, "/delayClaim")
 
 if __name__ == "__main__":
     app.run(host="127.0.0.1", port=3000, debug=True)

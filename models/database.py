@@ -11,3 +11,4 @@ db_port = os.getenv("RTP_DBPORT", "5432")
 db_url = ("postgresql" + "://" + db_user + ":" + db_pass + "@" + db_host + ":" + db_port + "/" + db_name)
 
 db = connect(db_url)
+

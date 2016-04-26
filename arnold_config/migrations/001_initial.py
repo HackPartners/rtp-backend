@@ -3,7 +3,8 @@ from playhouse.postgres_ext import *
 
 from datetime import datetime
 
-from models.database import db
+from .. import db
+
 db.connect()
 
 
@@ -55,3 +56,17 @@ class DelayClaim(RtpModel):
 	payment_details			= ForeignKeyField(PaymentDetails, unique=True)
 
 
+all_tables = [
+    PaymentDetails,
+    ContactDetails,
+    Journey,
+    ClaimValidation,
+    DelayClaim
+];
+
+
+def up():
+    db.create_tables(all_tables, safe=True)
+
+def down():
+    db.drop_tables(all_tables)
