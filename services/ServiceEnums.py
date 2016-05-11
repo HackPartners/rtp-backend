@@ -10,3 +10,4 @@ class PaymentTypes(Enum):
 	BANK_TRANSFER 		= "BANK_TRANSFER"
 	CHEQUE 				= "CHEQUE"
 	TRAVEL_VOUCHER		= "TRAVEL VOUCHER"
+
