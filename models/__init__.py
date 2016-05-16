@@ -42,6 +42,7 @@ class Journey(RtpModel):
 
 class ClaimValidation(RtpModel):
 	journey_identifier		= CharField(null=True)
+	ip_address				= CharField(null=True)
 	delay_length			= IntegerField(null=True)
 	service_id				= CharField(null=True)
 	total_refund			= DecimalField(null=True)

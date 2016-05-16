@@ -57,6 +57,7 @@ class DelayClaimRequestService:
         return contact
 
     def save_journey_request(self, journey_request, image_64):
+        print(journey_request)
 
         journey = Journey()
         journey.image_64 = image_64

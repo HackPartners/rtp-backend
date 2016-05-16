@@ -32,6 +32,7 @@ class DelayClaimResource(Resource):
         response = []
 
         clause = None
+        withoutImage = False
 
         
         if "id" in args:
@@ -39,6 +40,9 @@ class DelayClaimResource(Resource):
 
         if "identification" in args:
             clause = ClaimValidation.journey_identifier == args["identification"]
+
+        if "withoutImage" in args:
+            withoutImage = args["withoutImage"]
 
         delay_claims = (DelayClaim.select()
                             .join(ClaimValidation)
@@ -48,6 +52,10 @@ class DelayClaimResource(Resource):
             d = model_to_dict(delay_claim, backrefs=True, recurse=True)
 
             d_json = convert_dict_date_string(d)
+
+            if withoutImage:
+                d_json["journey"]["image_64"] = None
+
             response.append(d_json)
 
         return response
@@ -64,6 +72,9 @@ class DelayClaimResource(Resource):
         dcrs = DelayClaimRequestService()
         delay_claim = dcrs.save_claim_request(params)
 
+        ip_address = request.remote_addr
+        delay_claim.ip_address = ip_address
+
         response["id"] = delay_claim.id
 
         return response
@@ -74,31 +85,23 @@ class DelayClaimResource(Resource):
 
         params = request.json
 
-        claim_id = None
-
         if not "claimId" in params or not params["claimId"]: 
             return {
                 "status": "ERROR",
                 "message": "claimId parameter is required"
             }
 
-        print(params)
+        claim_id = params["claimId"]
 
-        c_arr = (DelayClaim
-                    .select()
-                    .join(ClaimValidation)
-                    .join(Journey, on=DelayClaim.journey==Journey.id)
-                    .where(ClaimValidation.journey_identifier == claim_id))
+        try:
+            c = DelayClaim.get(DelayClaim.id == claim_id)
 
-        print(c_arr)
-
-        if c_arr.count() == 0:
+        except DelayClaim.DoesNotExist:
             return {
                 "status": "DOES_NOT_EXIST",
                 "message": "claim does not exist"
             }
 
-        c = c_arr[0]
 
         v = c.claim_validation
         j = c.journey
@@ -120,11 +123,6 @@ class DelayClaimResource(Resource):
 
         if "cost" in params and params["cost"]:
             j.cost = params["cost"]
-            print(j.cost)
-
-        j.save()
-        v.save()
-        c.save()
 
         return {
                 "status": "SUCCESS",
